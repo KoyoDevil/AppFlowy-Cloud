@@ -13,6 +13,8 @@ use gotrue_entity::sso::{SSOProvider, SSOProviders};
 use infra::reqwest::{check_response, from_body, from_response};
 use reqwest::{Method, RequestBuilder};
 use tracing::event;
+use tracing::{info, error};
+
 
 #[derive(Clone, Debug)]
 pub struct Client {
@@ -96,11 +98,11 @@ impl Client {
       Ok(token)
     } else if resp.status().is_client_error() {
       // 如果是客户端错误，记录错误日志并返回错误
-      warn!("客户端错误，状态码: {}", resp.status());
+      info!("客户端错误，状态码: {}", resp.status());
       Err(from_body::<GotrueClientError>(resp).await?.into())
     } else {
       // 处理其他非预期状态码
-      error!("非预期的响应状态: {}", resp.status());
+      info!("非预期的响应状态: {}", resp.status());
       Err(anyhow::anyhow!("unexpected response status: {}", resp.status()).into())
     }
   }
