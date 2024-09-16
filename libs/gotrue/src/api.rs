@@ -83,8 +83,7 @@ impl Client {
     // 构建请求的 URL，包含 `grant_type` 参数
     // dbg!(&grant);
     println!("token 方法中接收到的 grant: {:?}", grant);
-
-
+    
     // https://github.com/supabase/gotrue/blob/master/internal/api/verify.go#L219
     println!("开始构建请求的 URL");
     let url = format!("{}/token?grant_type={}", self.base_url, grant.type_as_str());
