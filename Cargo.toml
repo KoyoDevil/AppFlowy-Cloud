@@ -149,6 +149,9 @@ pin-project = "1.1.5"
 byteorder = "1.5.0"
 rayon = "1.10.0"
 
+isahc = "1.7"
+
+
 
 [dev-dependencies]
 once_cell = "1.19.0"
