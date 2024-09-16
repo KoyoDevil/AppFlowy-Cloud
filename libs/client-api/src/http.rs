@@ -327,10 +327,20 @@ impl Client {
     // 使用找到的 refresh_token 获取新的令牌
     info!("使用 refresh_token 获取新令牌");
     info!("gotrue_client 状态: {:?}", self.gotrue_client);
-    let mut new_token = self
+    let mut new_token = match self
         .gotrue_client
         .token(&refresh_token_grant)
-        .await?;
+        .await
+    {
+      Ok(token) => {
+        info!("成功获取新令牌");
+        token
+      },
+      Err(e) => {
+        error!("调用 token 方法失败: {:?}", e);
+        return Err(e.into());
+      }
+    };
 
     // refresh endpoint 不返回 provider_token
     // 因此我们需要手动设置以保留这些信息
