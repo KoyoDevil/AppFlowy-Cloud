@@ -91,26 +91,26 @@ impl Client {
     println!("发送 POST 请求到 URL: {}", url);
     println!("发送 payload 请求到 URL: {}", payload);
 
-    Err(anyhow::anyhow!("token 方法未执行实际逻辑").into())
+    // Err(anyhow::anyhow!("token 方法未执行实际逻辑").into())
     // // 发送 POST 请求到指定的 URL
 
-    // let resp = self.client.post(url).json(&payload).send().await?;
-    //
-    // // 检查响应状态码
-    // if resp.status().is_success() {
-    //   // 如果请求成功，解析响应体为 GotrueTokenResponse
-    //   info!("请求成功，解析响应体");
-    //   let token: GotrueTokenResponse = from_body(resp).await?;
-    //   Ok(token)
-    // } else if resp.status().is_client_error() {
-    //   // 如果是客户端错误，记录错误日志并返回错误
-    //   info!("客户端错误，状态码: {}", resp.status());
-    //   Err(from_body::<GotrueClientError>(resp).await?.into())
-    // } else {
-    //   // 处理其他非预期状态码
-    //   info!("非预期的响应状态: {}", resp.status());
-    //   Err(anyhow::anyhow!("unexpected response status: {}", resp.status()).into())
-    // }
+    let resp = self.client.post(url).json(&payload).send().await?;
+
+    // 检查响应状态码
+    if resp.status().is_success() {
+      // 如果请求成功，解析响应体为 GotrueTokenResponse
+      println!("请求成功，解析响应体");
+      let token: GotrueTokenResponse = from_body(resp).await?;
+      Ok(token)
+    } else if resp.status().is_client_error() {
+      // 如果是客户端错误，记录错误日志并返回错误
+      println!("客户端错误，状态码: {}", resp.status());
+      Err(from_body::<GotrueClientError>(resp).await?.into())
+    } else {
+      // 处理其他非预期状态码
+      println!("非预期的响应状态: {}", resp.status());
+      Err(anyhow::anyhow!("unexpected response status: {}", resp.status()).into())
+    }
   }
 
   #[tracing::instrument(skip_all, err)]
