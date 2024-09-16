@@ -335,7 +335,7 @@ impl Client {
     info!("gotrue_client 状态: {:?}", self.gotrue_client);
 
 
-    let client = Client::builder()
+    let client = reqwest::Client::builder()
         .timeout(Duration::from_secs(15))
         .build()?;
 
