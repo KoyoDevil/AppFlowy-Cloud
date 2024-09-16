@@ -335,21 +335,21 @@ impl Client {
     info!("gotrue_client 状态: {:?}", self.gotrue_client);
 
 
-    let client22 = reqwest::Client::builder()
-        .timeout(Duration::from_secs(15))
-        .build()?;
-
-    let url = "http://172.18.135.14/gotrue/token?grant_type=refresh_token";
-    let payload = serde_json::json!({
-        "refresh_token": "ZGEglUQswxz4a6Ygk0XWTA"
-    });
-
-    let response = client22.post(url)
-        .json(&payload)
-        .send()
-        .await?;
-
-    println!("Response11111: {:?}", response.text().await?);
+    // let client22 = reqwest::Client::builder()
+    //     .timeout(Duration::from_secs(15))
+    //     .build()?;
+    //
+    // let url = "http://172.18.135.14/gotrue/token?grant_type=refresh_token";
+    // let payload = serde_json::json!({
+    //     "refresh_token": "ZGEglUQswxz4a6Ygk0XWTA"
+    // });
+    //
+    // let response = client22.post(url)
+    //     .json(&payload)
+    //     .send()
+    //     .await?;
+    //
+    // println!("Response11111: {:?}", response.text().await?);
 
     let mut new_token = match self
         .gotrue_client
