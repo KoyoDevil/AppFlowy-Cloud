@@ -315,6 +315,7 @@ impl Client {
 
     // 使用找到的 refresh_token 获取新的令牌
     info!("使用 refresh_token 获取新令牌");
+    info!("gotrue_client 状态: {:?}", self.gotrue_client);
     let mut new_token = self
         .gotrue_client
         .token(&Grant::RefreshToken(RefreshTokenGrant {
