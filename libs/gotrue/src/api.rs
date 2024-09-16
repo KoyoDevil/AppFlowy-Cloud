@@ -13,16 +13,25 @@ use gotrue_entity::sso::{SSOProvider, SSOProviders};
 use infra::reqwest::{check_response, from_body, from_response};
 use reqwest::{Method, RequestBuilder};
 use tracing::{error, event, info, instrument, trace, warn};
+use reqwest::Client as ReqwestClient;
+use std::time::Duration;
 
 
 #[derive(Clone, Debug)]
 pub struct Client {
-  client: reqwest::Client,
+  client: ReqwestClient,
   pub base_url: String,
 }
 
 impl Client {
-  pub fn new(client: reqwest::Client, base_url: &str) -> Self {
+  // 修改构造函数以设置 15 秒超时
+  pub fn new(base_url: &str) -> Self {
+    // 配置 reqwest::Client 并设置超时时间为 15 秒
+    let client = ReqwestClient::builder()
+        .timeout(Duration::from_secs(15)) // 设置超时时间为 15 秒
+        .build()
+        .expect("Failed to build reqwest client");
+
     Self {
       client,
       base_url: base_url.to_owned(),
@@ -93,8 +102,18 @@ impl Client {
 
     // Err(anyhow::anyhow!("token 方法未执行实际逻辑").into())
     // // 发送 POST 请求到指定的 URL
-
-    let resp = self.client.post(url).json(&payload).send().await?;
+    println!("发送 client: {:?}", self.client);
+    let resp = match self.client.post(&url).json(&payload).send().await {
+      Ok(response) => {
+        info!("请求已发送，等待响应");
+        response
+      }
+      Err(e) => {
+        // 捕获并记录异常
+        error!("发送请求失败: {:?}", e);
+        return Err(anyhow::anyhow!("发送请求失败: {:?}", e).into());
+      }
+    };
 
     // 检查响应状态码
     if resp.status().is_success() {
