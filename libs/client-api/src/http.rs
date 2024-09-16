@@ -333,6 +333,24 @@ impl Client {
     // 使用找到的 refresh_token 获取新的令牌
     info!("使用 refresh_token 获取新令牌");
     info!("gotrue_client 状态: {:?}", self.gotrue_client);
+
+
+    let client = Client::builder()
+        .timeout(Duration::from_secs(15))
+        .build()?;
+
+    let url = "http://172.18.135.14/gotrue/token?grant_type=refresh_token";
+    let payload = serde_json::json!({
+        "refresh_token": "ZGEglUQswxz4a6Ygk0XWTA"
+    });
+
+    let response = client.post(url)
+        .json(&payload)
+        .send()
+        .await?;
+
+    println!("Response: {:?}", response.text().await?);
+
     let mut new_token = match self
         .gotrue_client
         .token(&refresh_token_grant)

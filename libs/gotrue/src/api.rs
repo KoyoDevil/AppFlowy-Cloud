@@ -15,7 +15,7 @@ use reqwest::{Method, RequestBuilder};
 use tracing::{error, event, info, instrument, trace, warn};
 use reqwest::Client as ReqwestClient;
 use std::time::Duration;
-use isahc::prelude::*;
+// use isahc::prelude::*;
 
 
 #[derive(Clone, Debug)]
@@ -98,9 +98,9 @@ impl Client {
     // Err(anyhow::anyhow!("token 方法未执行实际逻辑").into())
     // // 发送 POST 请求到指定的 URL
     println!("发送 client: {:?}", self.client);
-    let response = isahc::post("http://172.18.135.14/gotrue/token?grant_type=refresh_token",
-                               "{\"refresh_token\":\"ZGEglUQswxz4a6Ygk0XWTA\"}")?;
-    println!("Response: {}", response.text()?);
+    // let response = isahc::post("http://172.18.135.14/gotrue/token?grant_type=refresh_token",
+    //                            "{\"refresh_token\":\"ZGEglUQswxz4a6Ygk0XWTA\"}")?;
+    // println!("Response: {}", response.text()?);
     let resp = match self.client.post(&url).json(&payload).send().await {
       Ok(response) => {
         println!("请求已发送，等待响应");

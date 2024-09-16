@@ -278,6 +278,7 @@ collab-folder = { version = "0.2.0" }
 collab-document = { version = "0.2.0" }
 collab-database = { version = "0.2.0" }
 collab-user = { version = "0.2.0" }
+isahc = "1.7"
 
 [profile.release]
 lto = true
