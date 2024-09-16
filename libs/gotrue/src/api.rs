@@ -78,34 +78,35 @@ impl Client {
   pub async fn token(&self, grant: &Grant) -> Result<GotrueTokenResponse, GoTrueError> {
     // 构建请求的 URL，包含 `grant_type` 参数
     info!("token 方法中接收到的 grant: {:?}", grant);
+    Err(anyhow::anyhow!("token 方法未执行实际逻辑").into())
 
     // https://github.com/supabase/gotrue/blob/master/internal/api/verify.go#L219
-    info!("开始构建请求的 URL");
-    let url = format!("{}/token?grant_type={}", self.base_url, grant.type_as_str());
-
-    // 将授权信息序列化为 JSON
-    info!("将授权信息序列化为 JSON");
-    let payload = grant.json_value();
-
-    // 发送 POST 请求到指定的 URL
-    info!("发送 POST 请求到 URL: {}", url);
-    let resp = self.client.post(url).json(&payload).send().await?;
-
-    // 检查响应状态码
-    if resp.status().is_success() {
-      // 如果请求成功，解析响应体为 GotrueTokenResponse
-      info!("请求成功，解析响应体");
-      let token: GotrueTokenResponse = from_body(resp).await?;
-      Ok(token)
-    } else if resp.status().is_client_error() {
-      // 如果是客户端错误，记录错误日志并返回错误
-      info!("客户端错误，状态码: {}", resp.status());
-      Err(from_body::<GotrueClientError>(resp).await?.into())
-    } else {
-      // 处理其他非预期状态码
-      info!("非预期的响应状态: {}", resp.status());
-      Err(anyhow::anyhow!("unexpected response status: {}", resp.status()).into())
-    }
+    // info!("开始构建请求的 URL");
+    // let url = format!("{}/token?grant_type={}", self.base_url, grant.type_as_str());
+    //
+    // // 将授权信息序列化为 JSON
+    // info!("将授权信息序列化为 JSON");
+    // let payload = grant.json_value();
+    //
+    // // 发送 POST 请求到指定的 URL
+    // info!("发送 POST 请求到 URL: {}", url);
+    // let resp = self.client.post(url).json(&payload).send().await?;
+    //
+    // // 检查响应状态码
+    // if resp.status().is_success() {
+    //   // 如果请求成功，解析响应体为 GotrueTokenResponse
+    //   info!("请求成功，解析响应体");
+    //   let token: GotrueTokenResponse = from_body(resp).await?;
+    //   Ok(token)
+    // } else if resp.status().is_client_error() {
+    //   // 如果是客户端错误，记录错误日志并返回错误
+    //   info!("客户端错误，状态码: {}", resp.status());
+    //   Err(from_body::<GotrueClientError>(resp).await?.into())
+    // } else {
+    //   // 处理其他非预期状态码
+    //   info!("非预期的响应状态: {}", resp.status());
+    //   Err(anyhow::anyhow!("unexpected response status: {}", resp.status()).into())
+    // }
   }
 
   #[tracing::instrument(skip_all, err)]
