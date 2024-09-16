@@ -313,14 +313,23 @@ impl Client {
     }
     let refresh_token = refresh_token.ok_or(url_missing_param("refresh_token"))?;
 
+    // 打印 refresh_token 的值
+    info!("创建 RefreshTokenGrant，refresh_token: {}", refresh_token);
+
+    let refresh_token_grant = Grant::RefreshToken(RefreshTokenGrant {
+      refresh_token: refresh_token.to_owned(),
+    });
+
+    // 打印完整的 Grant 枚举
+    info!("创建 Grant 枚举: {:?}", refresh_token_grant);
+
+
     // 使用找到的 refresh_token 获取新的令牌
     info!("使用 refresh_token 获取新令牌");
     info!("gotrue_client 状态: {:?}", self.gotrue_client);
     let mut new_token = self
         .gotrue_client
-        .token(&Grant::RefreshToken(RefreshTokenGrant {
-          refresh_token: refresh_token.to_owned(),
-        }))
+        .token(&refresh_token_grant)
         .await?;
 
     // refresh endpoint 不返回 provider_token
