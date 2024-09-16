@@ -77,7 +77,8 @@ impl Client {
   // #[tracing::instrument(skip_all, err)]
   pub async fn token(&self, grant: &Grant) -> Result<GotrueTokenResponse, GoTrueError> {
     // 构建请求的 URL，包含 `grant_type` 参数
-    info!("token 方法中接收到的 grant: {:?}", grant);
+    dbg!(&grant);
+    println!("token 方法中接收到的 grant: {:?}", grant);
     Err(anyhow::anyhow!("token 方法未执行实际逻辑").into())
 
     // https://github.com/supabase/gotrue/blob/master/internal/api/verify.go#L219
