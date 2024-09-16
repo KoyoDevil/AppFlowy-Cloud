@@ -83,7 +83,7 @@ impl Client {
     // 构建请求的 URL，包含 `grant_type` 参数
     // dbg!(&grant);
     println!("token 方法中接收到的 grant: {:?}", grant);
-    
+
     // https://github.com/supabase/gotrue/blob/master/internal/api/verify.go#L219
     println!("开始构建请求的 URL");
     let url = format!("{}/token?grant_type={}", self.base_url, grant.type_as_str());
@@ -99,12 +99,12 @@ impl Client {
     println!("发送 client: {:?}", self.client);
     let resp = match self.client.post(&url).json(&payload).send().await {
       Ok(response) => {
-        info!("请求已发送，等待响应");
+        println!("请求已发送，等待响应");
         response
       }
       Err(e) => {
         // 捕获并记录异常
-        error!("发送请求失败: {:?}", e);
+        println!("发送请求失败: {:?}", e);
         return Err(anyhow::anyhow!("发送请求失败: {:?}", e).into());
       }
     };
