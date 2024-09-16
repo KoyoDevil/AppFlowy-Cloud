@@ -269,46 +269,75 @@ impl Client {
   /// return a bool indicating if the user is new
   #[instrument(level = "debug", skip_all, err)]
   pub async fn sign_in_with_url(&self, url: &str) -> Result<bool, AppResponseError> {
+    // 解析传入的 URL
+    info!("开始解析 URL: {}", url);
     let parsed = Url::parse(url)?;
-    let key_value_pairs = parsed
-      .fragment()
-      .ok_or(url_missing_param("fragment"))?
-      .split('&');
 
+    // 获取 URL 中的 fragment 部分
+    info!("获取 URL fragment 部分");
+    let key_value_pairs = parsed
+        .fragment()
+        .ok_or(url_missing_param("fragment"))? // 如果 fragment 缺失，返回错误
+        .split('&'); // 按 & 分割参数
+
+    // 初始化用于存储 refresh_token、provider_token 和 provider_refresh_token 的变量
     let mut refresh_token: Option<&str> = None;
     let mut provider_token: Option<String> = None;
     let mut provider_refresh_token: Option<String> = None;
+
+    // 遍历 fragment 中的键值对，查找相应的令牌
+    info!("遍历 fragment 参数，查找令牌");
     for param in key_value_pairs {
       match param.split_once('=') {
         Some(pair) => {
           let (k, v) = pair;
+          info!("找到参数: {}={}", k, v);
           if k == "refresh_token" {
             refresh_token = Some(v);
+            info!("找到 refresh_token: {}", v);
           } else if k == "provider_token" {
             provider_token = Some(v.to_string());
+            info!("找到 provider_token: {}", v);
           } else if k == "provider_refresh_token" {
             provider_refresh_token = Some(v.to_string());
+            info!("找到 provider_refresh_token: {}", v);
           }
         },
-        None => warn!("param is not in key=value format: {}", param),
+        None => warn!("参数不是 key=value 格式: {}", param), // 日志：如果参数格式不正确
       }
+    }
+
+    // 检查是否找到了 refresh_token，如果没有找到，返回错误
+    if refresh_token.is_none() {
+      warn!("未找到 refresh_token");
     }
     let refresh_token = refresh_token.ok_or(url_missing_param("refresh_token"))?;
 
+    // 使用找到的 refresh_token 获取新的令牌
+    info!("使用 refresh_token 获取新令牌");
     let mut new_token = self
-      .gotrue_client
-      .token(&Grant::RefreshToken(RefreshTokenGrant {
-        refresh_token: refresh_token.to_owned(),
-      }))
-      .await?;
+        .gotrue_client
+        .token(&Grant::RefreshToken(RefreshTokenGrant {
+          refresh_token: refresh_token.to_owned(),
+        }))
+        .await?;
 
-    // refresh endpoint does not return provider token
-    // so we need to set it manually to preserve this information
+    // refresh endpoint 不返回 provider_token
+    // 因此我们需要手动设置以保留这些信息
+    info!("手动设置 provider_token 和 provider_refresh_token");
     new_token.provider_access_token = provider_token;
     new_token.provider_refresh_token = provider_refresh_token;
 
+    // 验证新获取的令牌
+    info!("验证新获取的令牌");
     let (_user, new) = self.verify_token(&new_token.access_token).await?;
+
+    // 更新存储的令牌
+    info!("更新存储的令牌");
     self.token.write().set(new_token);
+
+    // 返回成功状态
+    info!("登录成功，返回状态");
     Ok(new)
   }
 
