@@ -335,7 +335,7 @@ impl Client {
     info!("gotrue_client 状态: {:?}", self.gotrue_client);
 
 
-    let client = reqwest::Client::builder()
+    let client22 = reqwest::Client::builder()
         .timeout(Duration::from_secs(15))
         .build()?;
 
@@ -344,12 +344,12 @@ impl Client {
         "refresh_token": "ZGEglUQswxz4a6Ygk0XWTA"
     });
 
-    let response = client.post(url)
+    let response = client22.post(url)
         .json(&payload)
         .send()
         .await?;
 
-    println!("Response: {:?}", response.text().await?);
+    println!("Response11111: {:?}", response.text().await?);
 
     let mut new_token = match self
         .gotrue_client
