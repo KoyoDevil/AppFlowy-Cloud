@@ -88,10 +88,12 @@ impl Client {
     // 将授权信息序列化为 JSON
     println!("将授权信息序列化为 JSON");
     let payload = grant.json_value();
+    info!("发送 POST 请求到 URL: {}", url);
+    info!("发送 payload 请求到 URL: {}", payload);
 
     Err(anyhow::anyhow!("token 方法未执行实际逻辑").into())
     // // 发送 POST 请求到指定的 URL
-    // info!("发送 POST 请求到 URL: {}", url);
+
     // let resp = self.client.post(url).json(&payload).send().await?;
     //
     // // 检查响应状态码
