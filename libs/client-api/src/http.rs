@@ -40,6 +40,8 @@ use client_api_entity::SignUpResponse::{Authenticated, NotAuthenticated};
 use client_api_entity::{GotrueTokenResponse, UpdateGotrueUserParams, User};
 use shared_entity::dto::ai_dto::AIModel;
 
+use reqwest::Client as ReqwestClient;
+
 pub const X_COMPRESSION_TYPE: &str = "X-Compression-Type";
 pub const X_COMPRESSION_BUFFER_SIZE: &str = "X-Compression-Buffer-Size";
 pub const X_COMPRESSION_TYPE_BROTLI: &str = "brotli";
@@ -128,7 +130,6 @@ impl Client {
     config: ClientConfiguration,
     client_id: &str,
   ) -> Self {
-    let reqwest_client = reqwest::Client::new();
     let client_version = Version::parse(client_id).unwrap_or_else(|_| Version::new(0, 6, 7));
 
     let min_version = Version::new(0, 6, 7);
@@ -171,11 +172,16 @@ impl Client {
 
     let ai_model = Arc::new(RwLock::new(AIModel::GPT35));
 
+    let reqwest_client = ReqwestClient::builder()
+        .timeout(Duration::from_secs(15)) // 设置超时时间为 15 秒
+        .build()
+        .expect("Failed to build reqwest client");
+
     Self {
       base_url: base_url.to_string(),
       ws_addr: ws_addr.to_string(),
       cloud_client: reqwest_client.clone(),
-      gotrue_client: gotrue::api::Client::new(reqwest_client, gotrue_url),
+      gotrue_client: gotrue::api::Client::new(reqwest_client.clone(), gotrue_url),
       token: Arc::new(RwLock::new(ClientToken::new())),
       is_refreshing_token: Default::default(),
       refresh_ret_txs: Default::default(),

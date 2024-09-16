@@ -25,13 +25,8 @@ pub struct Client {
 
 impl Client {
   // 修改构造函数以设置 15 秒超时
-  pub fn new(base_url: &str) -> Self {
-    // 配置 reqwest::Client 并设置超时时间为 15 秒
-    let client = ReqwestClient::builder()
-        .timeout(Duration::from_secs(15)) // 设置超时时间为 15 秒
-        .build()
-        .expect("Failed to build reqwest client");
-
+  // 修改构造函数，接受一个 reqwest::Client 和 base_url
+  pub fn new(client: ReqwestClient, base_url: &str) -> Self {
     Self {
       client,
       base_url: base_url.to_owned(),
