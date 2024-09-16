@@ -1,5 +1,6 @@
 use tracing::warn;
 
+#[derive(Debug)]
 pub enum Grant {
   Password(PasswordGrant),
   RefreshToken(RefreshTokenGrant),
@@ -7,11 +8,13 @@ pub enum Grant {
   PKCE,
 }
 
+#[derive(Debug)]
 pub struct PasswordGrant {
   pub email: String,
   pub password: String,
 }
 
+#[derive(Debug)]
 pub struct RefreshTokenGrant {
   pub refresh_token: String,
 }
